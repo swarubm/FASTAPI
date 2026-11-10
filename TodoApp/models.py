@@ -13,4 +13,3 @@ class Todos(Base):
     priority = Column(Integer)
     Complete = Column(Boolean,default=False)
 
-
