@@ -1,5 +1,7 @@
 from operator import index
 
+from pydantic import BaseModel
+
 from database import Base
 from sqlalchemy import Integer, Column, Boolean,String
 
@@ -12,4 +14,5 @@ class Todos(Base):
     description = Column(String)
     priority = Column(Integer)
     Complete = Column(Boolean,default=False)
+
 
