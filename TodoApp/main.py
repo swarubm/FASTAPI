@@ -8,13 +8,17 @@ from starlette import status
 import models
 from models import Todos
 from database import engine,sessionLocal
-
+from routers import auth
 
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
+
+app.include_router(auth.router)
+
+
 def get_db():
-    db=sessionLocal()
+    db=sessionLocal(auth.router)
     try:
         yield db
     finally:
