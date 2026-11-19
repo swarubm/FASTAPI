@@ -1,8 +1,19 @@
 from fastapi import APIRouter
+from passlib.handlers.bcrypt import bcrypt
 from pydantic import BaseModel
+from sqlalchemy.util import deprecated
+
 from models import Users
+from passlib.context import CryptContext
+
 
 router = APIRouter()
+
+bcrypt_context = CryptContext(schemes=['bcrypt'],deprecated='auto')
+
+
+
+
 
 class CreateRequest(BaseModel):
     username:str
@@ -22,7 +33,7 @@ async def create_user(create_user_request:CreateRequest):
         first_name=create_user_request.first_name,
         last_name=create_user_request.last_name,
         role=create_user_request.role,
-        hashed_password=create_user_request.password,
+        hashed_password=bcrypt_context.hash(create_user_request.password),
         is_active=True
     )
     return create_user_model
