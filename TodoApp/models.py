@@ -1,9 +1,22 @@
-from operator import index
+from email.policy import default
 
-from pydantic import BaseModel
+from sqlalchemy.engine import default
 
 from database import Base
-from sqlalchemy import Integer, Column, Boolean,String
+from sqlalchemy import Integer, Column, Boolean, String,ForeignKey
+
+
+class Users(Base):
+    __tablename__ = 'users'
+    id=Column(Integer,primary_key=True,index=True)
+    email= Column(String,unique=True)
+    username =Column(String,unique=True)
+    first_name = Column(String)
+    last_name = Column(String)
+    hashed_password = Column(String)
+    is_active=Column(Boolean,default=True)
+    role=Column(String)
+
 
 
 class Todos(Base):
@@ -14,5 +27,5 @@ class Todos(Base):
     description = Column(String)
     priority = Column(Integer)
     Complete = Column(Boolean,default=False)
-
+    owner_id = Column(Integer,ForeignKey('users.id'))
 
