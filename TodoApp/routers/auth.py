@@ -1,8 +1,12 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 from passlib.handlers.bcrypt import bcrypt
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from sqlalchemy.util import deprecated
 
+from database import sessionLocal
 from models import Users
 from passlib.context import CryptContext
 
@@ -22,6 +26,16 @@ class CreateRequest(BaseModel):
     email:str
     password:str
     role: str
+
+def get_db():
+    db = sessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+db_dependency = Annotated[Session, Depends(get_db)]
 
 
 
