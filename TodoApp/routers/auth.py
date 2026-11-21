@@ -1,10 +1,12 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from opentelemetry.trace import Status
 from passlib.handlers.bcrypt import bcrypt
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy.util import deprecated
+from starlette import status
 
 from database import sessionLocal
 from models import Users
@@ -39,8 +41,9 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 
-@router.post("/auth/")
-async def create_user(create_user_request:CreateRequest):
+@router.post("/auth/",status_code=status.HTTP_201_CREATED)
+
+async def create_user( db:db_dependency,create_user_request:CreateRequest):
     create_user_model = Users(
         email=create_user_request.email,
         username=create_user_request.username,
@@ -50,5 +53,7 @@ async def create_user(create_user_request:CreateRequest):
         hashed_password=bcrypt_context.hash(create_user_request.password),
         is_active=True
     )
+    db.add(create_user_model)
+    db.commit()
     return create_user_model
     # return{'user':'authenticated'}
